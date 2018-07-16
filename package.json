@@ -1,0 +1,36 @@
+{
+  "name": "bz-uploader",
+  "version": "0.1.0",
+  "description": "播种网图片上传模块",
+  "main": "dist/bz-uploader.umd.js",
+  "module": "dist/bz-uploader.esm.js",
+  "scripts": {
+    "build": "node ./build/build.js",
+    "lint": "eslint ./src/index.js"
+  },
+  "author": "Garwi",
+  "license": "MIT",
+  "devDependencies": {
+    "autoprefixer": "^8.6.5",
+    "cssnano": "^4.0.1",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^11.3.2",
+    "eslint-plugin-import": "^2.13.0",
+    "rollup": "^0.48.2",
+    "rollup-plugin-buble": "^0.19.2",
+    "rollup-plugin-commonjs": "^8.4.1",
+    "rollup-plugin-node-resolve": "^3.3.0",
+    "rollup-plugin-postcss": "^1.6.2",
+    "uglify-js": "^3.4.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BozhongFE/bz-uploader.git"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "object-assign": "^4.1.1",
+    "promise-polyfill": "7.1.2",
+    "qs": "^6.5.2"
+  }
+}

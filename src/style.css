@@ -1,0 +1,100 @@
+.bz-upload {
+  opacity: 0;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.bz-upload-input {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  font-size: 0;
+  left: auto\9;
+  right: 0\9;
+  font-size: 100px\9;
+  width: 200%\9;
+  height: 130%\9;
+}
+
+.bz-uploading {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.bz-uploading.hide {
+  display: none;
+}
+
+.bz-uploading-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.6);
+  width: 8em;
+  height: 8em;
+  border-radius: 0.5em;
+}
+
+.bz-uploading-text {
+  color: #fff;
+  font-size: 0.8em;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.bz-uploading-bounce {
+  width: 5em;
+  text-align: center;
+  margin: 1em 0;
+}
+ 
+.bz-uploading-bounce > div {
+  width: 0.6em;
+  height: 0.6em;
+  background-color: #f2f2f2;
+  border-radius: 100%;
+  display: inline-block;
+  -webkit-animation: bzBouncedelay 1.4s infinite ease-in-out;
+  animation: bzBouncedelay 1.4s infinite ease-in-out;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+ 
+.bz-uploading-bounce .bounce1 {
+  -webkit-animation-delay: -0.32s;
+  animation-delay: -0.32s;
+}
+ 
+.bz-uploading-bounce .bounce2 {
+  -webkit-animation-delay: -0.16s;
+  animation-delay: -0.16s;
+}
+ 
+@-webkit-keyframes bzBouncedelay {
+  0%, 80%, 100% { -webkit-transform: scale(0.0) }
+  40% { -webkit-transform: scale(1.0) }
+}
+ 
+@keyframes bzBouncedelay {
+  0%, 80%, 100% {
+    transform: scale(0.0);
+    -webkit-transform: scale(0.0);
+  } 40% {
+    transform: scale(1.0);
+    -webkit-transform: scale(1.0);
+  }
+}
