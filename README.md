@@ -135,6 +135,7 @@ new Uploader({
 ```
 
 `onLimit` (Function) (origin, current)
+
   上传图片超过限制时触发该函数，origin 为 options.imgLimit，current 为当前剩余可上传张数，默认调用 options.message 提示一条消息
 
 `options` (Object) 跟图片一起发送给后端的参数 **Default:** { class: 'user' }
