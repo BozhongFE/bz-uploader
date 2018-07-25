@@ -10,6 +10,15 @@ function getLink(prefix, productPrefix) {
   return `//${prodPrefix}.bozhong.com`;
 }
 
+// 检查文件是否为 image
+function isImage(file) {
+  const type = file.type;
+  if (type && type.indexOf('image') === -1) {
+    return false;
+  }
+  return true;
+}
+
 // 判断是否是函数
 function isFunc(functionName) {
   return typeof functionName === 'function';
@@ -49,19 +58,17 @@ function compareAppVersion(version) {
   return flag;
 }
 
-function logger(...msgs) {
-  alert(msgs.join(' '));
-}
-
-function debug(...args) {
-  console.log.apply(console, ['[DEBUG]:', ...args]);
+function debug(isDebug = false, ...args) {
+  if (isDebug) {
+    console.log.apply(console, ['[DEBUG]:', ...args]);
+  }
 }
 
 export {
   getLink,
+  isImage,
   isFunc,
   isIE,
-  logger,
   debug,
   compareAppVersion,
 };

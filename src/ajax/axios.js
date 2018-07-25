@@ -24,7 +24,6 @@ function upload(params, options) {
   } else {
     sendData = new FormData();
     Object.keys(params).forEach((key) => {
-      console.log(params[key]);
       sendData.append(key, params[key]);
     });
   }

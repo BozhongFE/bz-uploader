@@ -91,6 +91,10 @@ new Uploader({
 
 `maxFileSize` (number) 最大文件大小，单位 kb **Default:** 3000
 
+`debug` (boolean) 是否开启 debug 模式 **Default:** false
+
+`message` (Function) (message) 消息提示，用于提示给用户的消息，默认为 alert(message)
+
 `upload` (Function) 自定义图片上传函数，默认用 src/ajax/ajax.js，依赖 jQuery / Zepto
 
 `beforeAjax` (Function) 每张图片上传前运行的函数
@@ -130,6 +134,9 @@ new Uploader({
   ]
 ```
 
+`onLimit` (Function) (origin, current)
+  上传图片超过限制时触发该函数，origin 为 options.imgLimit，current 为当前剩余可上传张数，默认调用 options.message 提示一条消息
+
 `options` (Object) 跟图片一起发送给后端的参数 **Default:** { class: 'user' }
 
 以上没注明必填的项均为可选项。
@@ -145,9 +152,14 @@ mode | 孕迹（iOS / Android）4.4.0 以上
 imgLimit | 孕迹（iOS / Android）4.4.0 以上
 watermark | 孕迹（iOS / Android）4.4.0 以上
 onFinish | 全版本
+onLimit | 全版本
 
 ## 实例方法
 
 ### destroy()
 
 销毁上传组件相关 DOM
+
+### deleteImage(amount)
+
+删除图片时调用该函数，可以恢复 options.imgLimit 数量，amount 为删除图片的数量

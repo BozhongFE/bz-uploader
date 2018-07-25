@@ -4,7 +4,7 @@ import compress from './compress';
 import Loading from './loading';
 import api from './api';
 import {
-  logger,
+  isImage,
   debug,
   compareAppVersion,
   isIE,
@@ -22,37 +22,7 @@ const isAndroidApp = /bz-([A-Za-z]{1,20})-android/.test(UA);
 const isIosApp = /bz-([A-Za-z]{1,20})-ios/.test(UA);
 const isApp = isAndroidApp || isIosApp;
 const isOldIe = isIE(9) || isIE(8);
-
-// 检查文件是否为 image
-function isImage(file) {
-  const type = file.type;
-  if (type && type.indexOf('image') === -1) {
-    return false;
-  }
-  return true;
-}
-
-// 筛选出符号规则的图片
-function filterFile(files, limit) {
-  const rightFiles = [];
-  const filesLength = files.length;
-
-  for (let i = 0; i < filesLength; i += 1) {
-    const file = files[i];
-    const name = file.name;
-    if (!isImage(file)) {
-      logger(`${name} 不是图片，只能上传图片哦`);
-    } else if (limit && file.size / 1024 > limit) {
-      logger(`${name} 图片太大了哦，请上传小于 ${limit / 1024}M 的图片`);
-    } else {
-      rightFiles.push({
-        file,
-        isBase64: false,
-      });
-    }
-  }
-  return rightFiles;
-}
+let isDebug = false;
 
 function runAppFunction(functionName, ...params) {
   const namespace = window.bzinner && window.bzinner[functionName] ? 'bzinner' : 'Crazy';
@@ -72,8 +42,8 @@ function runAppFunction(functionName, ...params) {
       window[namespace][functionName](...args);
     }
   } catch (error) {
-    debug('协议调用错误', functionName);
-    debug(error);
+    debug(isDebug, '协议调用错误', functionName);
+    debug(isDebug, error);
   }
 }
 
@@ -91,6 +61,10 @@ class Uploader {
       imgLimit: 9, // 限制张数
       watermark: 0, // 0 不要水印，1 添加水印，孕迹 4.4 及以上版本有效
       maxFileSize: 3000, // 最大文件大小，默认 3000，单位 kb
+      message(msg) { // 消息提醒
+        alert(msg);
+      },
+      debug: false, // 是否开启 debug 模式
       // upload 函数，用于图片上传，默认用 src/ajax/ajax.js，依赖 jQuery / Zepto
       upload: '',
       beforeAjax() {}, // 每张图片上传前执行的函数
@@ -103,6 +77,17 @@ class Uploader {
     this.opts.options = Object.assign({}, {
       class: 'user',
     }, options.options);
+    // 图片上传张数达到限制数量时，再次点击上传按钮将触发该函数
+    this.opts.onLimit = (originLimit, currLimit) => {
+      if (options.onLimit) {
+        options.onLimit(originLimit, currLimit);
+      } else {
+        this.opts.message(`最多可以上传 ${originLimit} 张图片哦，当前剩余可上传张数 ${currLimit} 张`);
+      }
+    };
+    this.state = {
+      currentImgLimit: this.opts.imgLimit,
+    };
     this.progress = () => {};
     this.init();
 
@@ -127,8 +112,15 @@ class Uploader {
   // 将 APP 返回的数据格式化成与 WEB 上传相同的格式
   static formatAppResult(results) {
     if (results) {
-      const firstItem = results[0];
-      if (typeof firstItem === 'string') {
+      // 孕迹 android 端，上传失败时返回空字符串，iOS 返回空数组
+      if (Array.isArray(results) || results === '') {
+        if (results === '' || results.length <= 0) {
+          return [{
+            code: 500,
+            url: '',
+            msg: 'app upload error',
+          }];
+        }
         return results.map(item => ({
           code: 0,
           url: item,
@@ -144,11 +136,12 @@ class Uploader {
       }
       return results;
     }
-    return results;
+    return [];
   }
 
   init() {
     const opts = this.opts;
+    isDebug = opts.debug;
 
     if (this.opts.isShowProgress && !isOldIe) {
       this.loading = new Loading();
@@ -156,9 +149,10 @@ class Uploader {
       this.progress = this.loading.show.bind(this.loading);
     }
 
-    // 当模式设置为单张时，限制张数为 1 张，用于 APP
+    // 当模式设置为单张时，限制张数为 1 张
     if (opts.mode === 'single') {
       this.opts.imgLimit = 1;
+      this.state.currentImgLimit = 1;
     }
 
     if (typeof opts.upload !== 'function') {
@@ -170,8 +164,10 @@ class Uploader {
 
     const appCallback = (json) => {
       const data = typeof json === 'string' ? JSON.parse(json) : json;
-      debug(json);
-      this.opts.onFinish(Uploader.formatAppResult(data));
+      const results = Uploader.formatAppResult(data);
+      debug(isDebug, json);
+      this.opts.onFinish(results);
+      this.computedLimit(results);
     };
 
     // APP 上传回调
@@ -242,6 +238,47 @@ class Uploader {
     }
   }
 
+  // 筛选出符号规则的图片
+  filterFile(files, limit) {
+    const rightFiles = [];
+    const filesLength = files.length;
+
+    for (let i = 0; i < filesLength; i += 1) {
+      const file = files[i];
+      const name = file.name;
+      if (!isImage(file)) {
+        this.opts.message(`${name} 不是图片，只能上传图片哦`);
+      } else if (limit && file.size / 1024 > limit) {
+        this.opts.message(`${name} 图片太大了哦，请上传小于 ${limit / 1024}M 的图片`);
+      } else {
+        rightFiles.push({
+          file,
+          isBase64: false,
+        });
+      }
+    }
+    return rightFiles;
+  }
+
+  computedLimit(results) {
+    const successResults = results.filter((item) => {
+      return item.code === 0;
+    });
+    const length = successResults.length;
+    let limit = this.state.currentImgLimit;
+
+    limit -= length;
+    this.state.currentImgLimit = limit < 0 ? 0 : limit;
+  }
+
+  deleteImage(amount = 1) {
+    const originLimit = this.opts.imgLimit;
+    let limit = this.state.currentImgLimit;
+
+    limit += amount;
+    this.state.currentImgLimit = limit > originLimit ? originLimit : limit;
+  }
+
   listener() {
     const self = this;
     const input = this.input;
@@ -307,11 +344,12 @@ class Uploader {
           try {
             opts.upload(params, uploadOptions);
           } catch (error) {
-            debug('上传错误：', error);
+            debug(isDebug, '上传错误：', error);
           }
         } else {
           // 全部上传完成，返回结果，隐藏 loading
           opts.onFinish(results);
+          self.computedLimit(results);
           self.loading.hide();
         }
       }
@@ -321,10 +359,17 @@ class Uploader {
 
     // 监听绑定按钮
     input.addEventListener('click', (event) => {
+      // 如果上传图片张数已达到限制数量，则不再允许上传
+      if (this.state.currentImgLimit <= 0) {
+        event.preventDefault();
+        this.opts.onLimit(this.opts.imgLimit, this.state.currentImgLimit);
+        return;
+      }
+
       // 在 APP 内，并且有图片上传协议
       if (isApp && !notScheme) {
         event.preventDefault();
-        Uploader.appUpload(opts.imgLimit, opts.watermark, () => {
+        Uploader.appUpload(this.state.currentImgLimit, opts.watermark, () => {
           notScheme = true;
           input.click();
         });
@@ -341,13 +386,13 @@ class Uploader {
         return;
       }
 
-      if (files.length > opts.imgLimit) {
-        logger(`最多上传${opts.imgLimit}张哦`);
+      if (files.length > this.state.currentImgLimit) {
+        this.opts.onLimit(this.opts.imgLimit, this.state.currentImgLimit);
         return;
       }
 
       // 筛选出符合条件的文件
-      const rightFiles = filterFile(files, opts.maxFileSize);
+      const rightFiles = this.filterFile(files, opts.maxFileSize);
 
       // 是否需要压缩
       if (opts.isCompress) {
@@ -371,7 +416,7 @@ class Uploader {
         Promise.all(compressQueue)
           .then(uploadQueue)
           .catch((err) => {
-            debug('error', err);
+            debug(isDebug, 'error', err);
           });
       } else {
         // 没有开启压缩，直接进入上传队列
@@ -380,6 +425,7 @@ class Uploader {
     }, false);
 
     if (isOldIe) {
+      debug(isDebug, '当前浏览器为 IE 9 或者 IE8');
       const iframe = this.iframe;
       const loadFn = () => {
         iframe.removeEventListener('load', loadFn, false);
@@ -391,12 +437,15 @@ class Uploader {
           if (data.error_code === 0) {
             const dd = data.data;
             const url = `${dd.url}?t=${Date.now()}`;
-            opts.onSuccess(url, 0);
-            opts.onFinish([{
+            const results = [{
               url,
               code: 0,
               msg: 'success',
-            }]);
+            }];
+
+            opts.onSuccess(url, 0);
+            opts.onFinish(results);
+            this.computedLimit(results);
           } else {
             opts.onError(data.error_message);
           }
