@@ -468,7 +468,8 @@ Uploader$2.prototype.createInput = function createInput () {
   input.type = 'file';
   input.name = 'file';
   input.className = 'bz-upload-input';
-  input.accept = 'image/gif,image/jpeg,image/jpg,image/png';
+  // accept='image/gif,image/jpeg,image/jpg,image/png'时，部分安卓机出现图片无法选择问题
+  input.accept = 'image/*';
 
   el.style.position = 'relative';
 
