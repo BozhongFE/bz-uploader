@@ -80,8 +80,8 @@ function debug(isDebug) {
 }
 
 var api = {
-  normal: ((getLink('upfile')) + "/upload.php"),
-  base64: ((getLink('upfile')) + "/upload_base64.php"),
+  normal: ("https:" + (getLink('upfile')) + "/upload.php"),
+  base64: ("https:" + (getLink('upfile')) + "/upload_base64.php"),
 };
 
 function checkLib() {
@@ -623,6 +623,7 @@ Uploader$2.prototype.listener = function listener () {
           params.contentType = 'image/jpeg';
         }
         params.file = file;
+        params.auto_rotate = opts.auto_rotate || 1;
 
         var uploadOptions = {
           api: opts.api,

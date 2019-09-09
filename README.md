@@ -73,6 +73,8 @@ new Uploader({
 
 `api` (string) 自定义图片上传接口
 
+`auto_rotate` (number) 是否自动修正图片旋转问题（有些手机是横竖不一），默认为 1，详细看 upload 接口这个参数
+
 `mode` (string) 上传模式，single 单张上传，multiple 多张上传 **Default:** 'single'
 
 `isCompress` (boolean) 是否压缩图片 **Default:** false

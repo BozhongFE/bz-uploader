@@ -305,6 +305,7 @@ class Uploader {
             params.contentType = 'image/jpeg';
           }
           params.file = file;
+          params.auto_rotate = opts.auto_rotate || 1;
 
           const uploadOptions = {
             api: opts.api,
