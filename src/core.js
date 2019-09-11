@@ -163,6 +163,15 @@ class Uploader {
     this.listener();
 
     const appCallback = (json) => {
+      if (typeof json === 'string') {
+        const handleKeys = ['Make', 'Model', 'Software'];
+        const reg = new RegExp(`\"(${handleKeys.join('\|')})\":\"([\\w-\\s\"\\"\.]+)\"`, 'gi');
+        json = json.replace(reg, function(match, exp1, exp2) {
+          const contentReg = /"|\\"/g
+          exp2 = exp2.replace(contentReg, '\'');
+          return `"${exp1}":"${exp2}"`
+        })
+      }
       const data = typeof json === 'string' ? JSON.parse(json) : json;
       const results = Uploader.formatAppResult(data);
       debug(isDebug, json);

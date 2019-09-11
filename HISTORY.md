@@ -1,3 +1,6 @@
+## 0.2.4
+`fix` 修复appCallback回调json数据双层双引号问题（里层双引号替换成单引号）
+
 ## 0.2.3
 `fix` ios 图片方向不对，自动旋转
 
@@ -10,7 +13,7 @@
 
 ## 0.2.0
 
-`new` 新增 `debug`, `message`, `onLimit` 配置项  
+`new` 新增 `debug`, `message`, `onLimit` 配置项
 `new` 新增 `deleteImage` 实例方法
 
 ## 0.1.0

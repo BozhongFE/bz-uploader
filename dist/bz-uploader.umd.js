@@ -481,6 +481,15 @@ Uploader$2.prototype.init = function init () {
   this.listener();
 
   var appCallback = function (json) {
+    if (typeof json === 'string') {
+      var handleKeys = ['Make', 'Model', 'Software'];
+      var reg = new RegExp(("\"(" + (handleKeys.join('\|')) + ")\":\"([\\w-\\s\"\\\".]+)\""), 'gi');
+      json = json.replace(reg, function(match, exp1, exp2) {
+        var contentReg = /"|\\"/g;
+        exp2 = exp2.replace(contentReg, '\'');
+        return ("\"" + exp1 + "\":\"" + exp2 + "\"")
+      });
+    }
     var data = typeof json === 'string' ? JSON.parse(json) : json;
     var results = Uploader$2.formatAppResult(data);
     debug(isDebug, json);
