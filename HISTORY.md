@@ -1,3 +1,6 @@
+## 0.2.5
+`fix` uploadImage协议className改为user
+
 ## 0.2.4
 `fix` 修复appCallback回调json数据双层双引号问题（里层双引号替换成单引号）
 
