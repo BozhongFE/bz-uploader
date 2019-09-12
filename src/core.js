@@ -103,7 +103,7 @@ class Uploader {
       runAppFunction('getBZAlbumMulti', json);
     } else if (isAndroidApp) {
       event.preventDefault();
-      runAppFunction('uploadImage', api.normal, 'tmp');
+      runAppFunction('uploadImage', api.normal, 'user');
     } else if (typeof callback === 'function') {
       callback();
     }
