@@ -1,6 +1,6 @@
 {
   "name": "bz-uploader",
-  "version": "0.2.3",
+  "version": "0.2.5",
   "description": "播种网图片上传模块",
   "main": "dist/bz-uploader.umd.js",
   "module": "dist/bz-uploader.esm.js",
