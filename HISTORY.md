@@ -1,3 +1,6 @@
+## 0.2.6
+`security` npm audit fix 升级更新依赖安全问题
+
 ## 0.2.5
 `fix` uploadImage协议className改为user
 

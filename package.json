@@ -1,6 +1,6 @@
 {
   "name": "bz-uploader",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "播种网图片上传模块",
   "main": "dist/bz-uploader.umd.js",
   "module": "dist/bz-uploader.esm.js",
@@ -28,7 +28,7 @@
     "url": "https://github.com/BozhongFE/bz-uploader.git"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "object-assign": "^4.1.1",
     "promise-polyfill": "7.1.2",
     "qs": "^6.5.2"
