@@ -1,3 +1,7 @@
+## 0.3.0
+`security` 升级更新依赖安全问题
+`new` 更新包名
+
 ## 0.2.6
 `security` npm audit fix 升级更新依赖安全问题
 
